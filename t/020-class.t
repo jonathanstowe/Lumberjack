@@ -10,6 +10,17 @@ isa-ok Lumberjack.all-messages, Supply, "all-messages is a Supply";
 
 is Lumberjack.default-level, Lumberjack::Error, "got the right default level";
 
+class FooLogger does Lumberjack::Dispatcher {
+    has @.messages;
+    method log(Lumberjack::Message $message) {
+        @!messages.append: $message;
+    }
+}
+
+my $dispatcher = FooLogger.new;
+
+Lumberjack.dispatchers.append: $dispatcher;
+
 my @messages;
 my @filtered-messages;
 
@@ -36,6 +47,7 @@ lives-ok { Lumberjack.log($message) }, "send message with level set";
 
 is @messages.elems, 2, "now have two messages total";
 is @filtered-messages.elems, 1, "but still got one in filtered because higher level than the default";
+is $dispatcher.messages.elems, @filtered-messages.elems, "and our dispatcher saw the right number too";
 
 done-testing;
 # vim: expandtab shiftwidth=4 ft=perl6

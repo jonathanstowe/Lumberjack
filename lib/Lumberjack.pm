@@ -6,8 +6,8 @@ class Lumberjack is Static {
 
     class Message { ... };
 
-    has Supplier $!supplier     = Supplier.new;
-    has Supply   $.all-messages = $!supplier.Supply;
+    has Supplier $!supplier;
+    has Supply   $.all-messages;
 
     enum Level <Off Fatal Error Warn Info Debug Trace All> does role {
         multi method ACCEPTS(Message $m) {
@@ -81,18 +81,48 @@ class Lumberjack is Static {
 
     }
 
-    has Supply $.filtered-messages = supply {
-        whenever $!all-messages -> $m {
-            my $filter-level = do if $m.class ~~ Logger {
-                $m.class.log-level;
-            }
-            else {
-                $!default-level;
-            }
-            if $m.level <= $filter-level {
-                emit $m;
+    role Dispatcher {
+        has $.levels = Level;
+
+        method log(Message $message) {
+            ...
+        }
+    }
+
+    has Dispatcher @.dispatchers;
+
+    has Supply $.filtered-messages; 
+
+    submethod BUILD() {
+        $!supplier       = Supplier.new;
+        $!all-messages   = $!supplier.Supply;
+        $!fatal-messages = $!all-messages.grep(Fatal);
+        $!error-messages = $!all-messages.grep(Error);
+        $!warn-messages  = $!all-messages.grep(Warn);
+        $!info-messages  = $!all-messages.grep(Info);
+        $!debug-messages = $!all-messages.grep(Debug);
+        $!trace-messages = $!all-messages.grep(Trace);
+        $!filtered-messages = supply {
+            whenever $!all-messages -> $m {
+                my $filter-level = do if $m.class ~~ Logger {
+                    $m.class.log-level;
+                }
+                else {
+                    $!default-level;
+                }
+                if $m.level <= $filter-level {
+                    emit $m;
+                }
             }
         }
+
+        $!filtered-messages.act(-> $message {
+            for @!dispatchers -> $dispatcher {
+                if $message.level ~~ $dispatcher.levels {
+                    $dispatcher.log($message);
+                }
+            }
+        });
     }
 }
 
