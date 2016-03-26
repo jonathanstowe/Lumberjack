@@ -15,12 +15,12 @@ class Lumberjack is Static {
         }
     };
 
-    has Supply $.fatal-messages = $!all-messages.grep(Fatal);
-    has Supply $.error-messages = $!all-messages.grep(Error);
-    has Supply $.warn-messages  = $!all-messages.grep(Warn);
-    has Supply $.info-messages  = $!all-messages.grep(Info);
-    has Supply $.debug-messages = $!all-messages.grep(Debug);
-    has Supply $.trace-messages = $!all-messages.grep(Trace);
+    has Supply $.fatal-messages;
+    has Supply $.error-messages;
+    has Supply $.warn-messages;
+    has Supply $.info-messages;
+    has Supply $.debug-messages;
+    has Supply $.trace-messages;
 
 
     has Level $.default-level is rw = Error;
@@ -79,6 +79,29 @@ class Lumberjack is Static {
             samewith $mess;
         }
 
+        method log-trace(Str() $message) is hidden-from-backtrace {
+            self.log(Trace, $message);
+        }
+
+        method log-debug(Str() $message) is hidden-from-backtrace {
+            self.log(Debug, $message);
+        }
+
+        method log-info(Str() $message) is hidden-from-backtrace {
+            self.log(Info, $message);
+        }
+
+        method log-warn(Str() $message) is hidden-from-backtrace {
+            self.log(Warn, $message);
+        }
+
+        method log-error(Str() $message) is hidden-from-backtrace {
+            self.log(Error, $message);
+        }
+
+        method log-fatal(Str() $message) is hidden-from-backtrace {
+            self.log(Fatal, $message);
+        }
     }
 
     role Dispatcher {
