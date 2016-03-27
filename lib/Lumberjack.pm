@@ -148,6 +148,21 @@ class Lumberjack is Static {
             }
         });
     }
+
+    sub format-message(Str $format, Message $message) returns Str is export(:FORMAT) {
+        use DateTime::Format::RFC2822;
+        my $message-frame = $message.backtrace.list[*-1];
+        my %expressions =   D => { DateTime::Format::RFC2822.new.to-string($message.when) },
+						    P => { $*PID },
+                            C => { $message.class.^name },
+                            L => { $message.level.Str },
+                            M => { $message.message },
+                            N => { $*PROGRAM-NAME },
+                            F => { $message-frame.file },
+                            l => { $message-frame.line },
+                            S => { $message-frame.subname };
+        $format.subst(/'%'(<{%expressions.keys}>)/, -> $/ { %expressions{~$0}.() }, :g);
+    }
 }
 
 # vim: expandtab shiftwidth=4 ft=perl6
