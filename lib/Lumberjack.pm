@@ -105,7 +105,8 @@ class Lumberjack is Static {
     }
 
     role Dispatcher {
-        has $.levels = Level;
+        has Mu $.levels   = Level;
+        has Mu $.classes; 
 
         method log(Message $message) {
             ...
@@ -139,9 +140,9 @@ class Lumberjack is Static {
             }
         }
 
-        $!filtered-messages.act(-> $message {
+        $!filtered-messages.tap(-> $message {
             for @!dispatchers -> $dispatcher {
-                if $message.level ~~ $dispatcher.levels {
+                if ($message.level ~~ $dispatcher.levels) && ($message.class ~~ $dispatcher.classes) {
                     $dispatcher.log($message);
                 }
             }
