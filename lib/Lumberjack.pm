@@ -55,7 +55,7 @@ class Lumberjack is Static {
 
     }
 
-    method log(Message $message) {
+    method log(Message $message) is hidden-from-backtrace {
         $!supplier.emit($message);
     }
 
@@ -66,7 +66,7 @@ class Lumberjack is Static {
             $level;
         }
 
-        proto method log(|c) { * }
+        proto method log(|c) is hidden-from-backtrace { * }
 
         multi method log(Message $message) is hidden-from-backtrace {
             Lumberjack.log($message);
@@ -149,10 +149,14 @@ class Lumberjack is Static {
         });
     }
 
-    sub format-message(Str $format, Message $message) returns Str is export(:FORMAT) {
+    sub default-date-formatter(DateTime $date-time) returns Str {
         use DateTime::Format::RFC2822;
-        my $message-frame = $message.backtrace.list[*-1];
-        my %expressions =   D => { DateTime::Format::RFC2822.new.to-string($message.when) },
+        DateTime::Format::RFC2822.new.to-string($date-time);
+    }
+
+    sub format-message(Str $format, Message $message, :&date-formatter = &default-date-formatter, Int :$callframes) returns Str is export(:FORMAT) {
+        my $message-frame = $callframes.defined ?? $message.backtrace.list[$callframes] !! $message.backtrace.list[*-1];
+        my %expressions =   D => { date-formatter($message.when) },
 						    P => { $*PID },
                             C => { $message.class.^name },
                             L => { $message.level.Str },
@@ -162,6 +166,24 @@ class Lumberjack is Static {
                             l => { $message-frame.line },
                             S => { $message-frame.subname };
         $format.subst(/'%'(<{%expressions.keys}>)/, -> $/ { %expressions{~$0}.() }, :g);
+    }
+
+    class Dispatcher::Console does Dispatcher {
+        has Bool        $.colour = False;
+        has IO::Handle  $.handle = $*ERR;
+        has Str         $.format = "%D [%L] %C %S : %M"; 
+        has Int         $.callframes = 4;
+        has Int         %.colours   = Trace => 23,
+                                      Debug => 21,
+                                      Info  => 40,
+                                      Warn  => 214,
+                                      Error => 202,
+                                      Fatal => 196;
+
+        method log(Message $message) {
+            my $format = $!colour ?? "\e[38;5;{%!colours{$message.level}}m{$!format}\e[0m" !! $!format;
+            $!handle.say: format-message($format, $message, callframes => $!callframes);
+        }
     }
 }
 
