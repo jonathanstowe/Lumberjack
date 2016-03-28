@@ -155,7 +155,7 @@ class Lumberjack is Static {
     }
 
     sub format-message(Str $format, Message $message, :&date-formatter = &default-date-formatter, Int :$callframes) returns Str is export(:FORMAT) {
-        my $message-frame = $callframes.defined ?? $message.backtrace.list[$callframes] !! $message.backtrace.list[*-1];
+        my $message-frame = $callframes.defined ?? $message.backtrace[$callframes] !! $message.backtrace.list[*-1];
         my %expressions =   D => { date-formatter($message.when) },
 						    P => { $*PID },
                             C => { $message.class.^name },
