@@ -1,12 +1,36 @@
 # Lumberjack
 
-Yet another logging framework
+A simple logging framework.
 
 ## Synopsis
 
 ```perl6
 
 use Lumberjack;
+
+# Output to $*ERR by default - in colour!
+Lumberjack.dispatchers.append: Lumberjack::Dispatcher::Console.new(:colours);
+
+class MyClass does Lumberjack::Logger {
+	method start() {
+       self.log-info("Starting ...");
+       ...
+   }
+
+   method do-stuff() {
+      self.log-debug("Doing stuff ...");
+      ...
+      if $something-went-wrong {
+         self.log-error("Something went wrong");
+      }
+   }
+   method stop() {
+       ...
+       self.log-info("Stopped.");
+   }
+}
+
+MyClass.log-level = Lumberjack::Debug;
 
 
 ```
@@ -27,6 +51,17 @@ level configuration driven things on top of this.
 I'm sure this doesn't yet have all the features to support all the
 requirements people, but it is released with the basic interface
 complete so it can actually be used.
+
+The approach taken reflects a patten that I have found useful in large
+object oriented programmes, where having the logging methods on a class
+means that you have the means to make log messages wherever you have
+an instance of the class without having to obtain a separate logger
+object.
+
+There are a couple of simple log dispatchers included which should get
+you started, but I would envisage that more useful ones may be provided
+as separate modules, though they are sufficiently simple to implement
+you can provide your own as required.
 
 ## Installation
 
