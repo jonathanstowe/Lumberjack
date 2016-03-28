@@ -185,6 +185,29 @@ class Lumberjack is Static {
             $!handle.say: format-message($format, $message, callframes => $!callframes);
         }
     }
+
+    class Dispatcher::File does Dispatcher {
+        has Str         $.file;
+        has IO::Handle  $.handle;
+        has Int         $.callframes = 4;
+        has Str         $.format = "%D [%L] %C %S : %M"; 
+
+        class X::NoFile is Exception {
+            has Str $.message = "One of file or handle must be provided";
+        }
+
+        method log(Message $message) {
+            if not $!handle.defined {
+                if $!file.defined {
+                    $!handle = $!file.IO.open(:a);
+                }
+                else {
+                    X::NoFile.new.throw;
+                }
+            }
+            $!handle.say: format-message($!format, $message, callframes => $!callframes);
+        }
+    }
 }
 
 # vim: expandtab shiftwidth=4 ft=perl6
