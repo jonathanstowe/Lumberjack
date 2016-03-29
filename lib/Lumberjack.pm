@@ -161,15 +161,15 @@ that accepts a DateTime and returns a formatted string (the default is RFC2822-l
 
 =head3 %D
 
-The formatted date
+The formatted date, using the provided date-formatter or the default.
 
 =head3 %P
 
-The Process ID of this process
+The Process ID of this process.
 
 =head3 %C
 
-The class name of the the class from the Message
+The class name of the the class from the Message.
 
 =head3 %L
 
@@ -312,69 +312,75 @@ conceivably smart match a class type object.
 
 =head1 Lumberjack::Logger
 
-This is role that provides a convenient interface to the logging functionality
-that can be consumed by any class. The advantage of using the role rather than
-accessing the C<log> method of C<Lumberjack> directly is that you don't need
-to worry about constructing the message and so forth.
+This is role that provides a convenient interface to the logging
+functionality that can be consumed by any class. The advantage of
+using the role rather than accessing the C<log> method of C<Lumberjack>
+directly is that you don't need to worry about constructing the message
+and so forth.
 
 =head2 method log-level
 
         method log-level() returns Level is rw
 
-This is a "class method" (that is setting the value will apply to all instances
-of the class,)  it is the value that is compared to the C<level> of a message
-to determine whether the message that should be dispatched (contingent of course
-on there being a suitable dispatcher that would accept it.)  Two special values
-of L<Lumberjack::Level|#Lumberjack::Level> are provided which may be used here
-as well as the standard values: C<All> which will cause all messages to be
-dispatched, and C<Off> which will cause no messages to be dispatched whatever
-the severity.
+This is a "class method" (that is setting the value will apply to all
+instances of the class,)  it is the value that is compared to the C<level>
+of a message to determine whether the message that should be dispatched
+(contingent of course on there being a suitable dispatcher that would
+accept it.)  Two special values of L<Lumberjack::Level|#Lumberjack::Level>
+are provided which may be used here as well as the standard values:
+C<All> which will cause all messages to be dispatched, and C<Off> which
+will cause no messages to be dispatched whatever the severity.
 
 =head2 method log
 
         multi method log(Message $message)
         multi method log(Level $level, Str $message)
 
-This method sends a message to be considered for dispatch.  They may be suitable
-if, for example, the C<level> of the method needs to be calculated or the message
-is actually being sent on behalf of some other object or process. For most cases
-however the level specific helpers will probably be more convenient.
+This method sends a message to be considered for dispatch.  They may
+be suitable if, for example, the C<level> of the method needs to be
+calculated or the message is actually being sent on behalf of some other
+object or process. For most cases however the level specific helpers
+will probably be more convenient.
 
 =head2 method log-trace
 
         method log-trace(Str() $message)
 
-This will send a message at level C<Trace> with the the supplied C<message>. It
-will be sent for dispatch if the applicable C<log-level> is C<All> or C<Trace>.
+This will send a message at level C<Trace> with the the supplied
+C<message>. It will be sent for dispatch if the applicable C<log-level>
+is C<All> or C<Trace>.
 
 =head2 method log-trace
 
         method log-debug(Str() $message)
 
-This will send a message at level C<Debug> with the supplied C<message> it will
-be sent for dispatch if the applicable C<log-level> is C<Debug>¸ C<Trace> or C<All>.
+This will send a message at level C<Debug> with the supplied C<message>
+it will be sent for dispatch if the applicable C<log-level> is C<Debug>¸
+C<Trace> or C<All>.
 
 =head2 method log-info
 
         method log-info(Str() $message)
 
-This will send a message at level C<Info> with the supplied C<message>. It will
-be sent for dispatch if the applicable C<log-level> is C<Info>, C<Debug>, C<Trace>
-or C<All>.
+This will send a message at level C<Info> with the supplied C<message>. It
+will be sent for dispatch if the applicable C<log-level> is C<Info>,
+C<Debug>, C<Trace> or C<All>.
 
 =head2 method log-warn
 
         method log-warn(Str() $message)
 
-This will send a message at level C<Warn> with the supplied C<message>. It will
-be sent for dispatch at levels C<Warn>, C<Info>, C<Debug>, C<Trace> or C<All>.
+This will send a message at level C<Warn> with the supplied C<message>. It
+will be sent for dispatch at levels C<Warn>, C<Info>, C<Debug>, C<Trace>
+or C<All>.
 
 =head2 method log-error
 
         method log-error(Str() $message)
 
-This will send a message at level C<Error> with the supplied C<message>. It will
-be sent for dispatch at all applicable levels except C<Fatal> or C<Off>.
+This will send a message at level C<Error> with the supplied
+C<message>. It will be sent for dispatch at all applicable levels except
+C<Fatal> or C<Off>.
 
 =head2 method log-fatal
 
@@ -405,7 +411,7 @@ Listed in decreasing "severity" (which is increasing numeric value,):
 
 =head2 Off
 
-No messages will be sent.
+No messages will be sent. 
 
 =head2 Fatal
 
@@ -439,9 +445,104 @@ The most high frequency messages.
 
 All messages will be sent.
 
+=head1 Lumberjack::Dispatcher::Console
+
+This is a simple dispatcher implementation that will output directly to
+the supplied STDIO handle (by default C<$*ERR>,) Output can be coloured
+to reflect the log level of the messages displayed (and you can if wish
+alter the colours you use.) As well as the configuration attributes
+described below you can set C<classes> and C<levels> as described for
+L<Lumberjack::Dispatcher|#Lumberjack::Dispatcher>/
+
+=head2 colour
+
+A boolean "adverb" indicating whether display should be coloured or not.
+The default is False (Output is not coloured,)
+
+=head2 handle
+
+This is an IO::Handle to which output will be made, the default is
+the STDERR handle C<$*ERR>, but you can use C<$*OUT> or some other
+handle opened to a sufficiently display-like device.
+
+=head2 format
+
+This is a format string for the output of the messages, the directives
+are described for the subroutine C<format-message> above.  The default
+is "%D [%L] %C %S : %M" which outputs: 
+
+   <date> [<Level>] <class> <method> : <message>  
+
+If you supply your own format you probably at least want to use "%M"
+to output the text of the message.
+
+=head2 callframes
+
+This is the number of callframes back from the top where the details of
+the actual callsite of the logging call that you are interesed in and is
+used to find the execution context of the logging message.  The default is
+4 which works well for using the L<Lumberjack::Logger|#Lumberjack::Logger>
+helper methods, but if you are creating your own Message objects and
+find that the subroutine name, line number and file or wrong then you
+may want to adjust this.
+
+=head2 colours
+
+This is colour map from the log-level of the message to a colour expressed
+as an integer in the range 0x10 .. 0xE7 (from the ANSI 256 colour set,)
+the default is roughly what I would expect ranging from Bluish for the
+least serious messages to Reddish for the most serious. You are free to
+supply your own as a hash keyed on the log level.  If you do so you should
+supply all of them.
+
+=head1 Lumberjack::Dispatcher::File
+
+This is a very simple dispatcher implementation that outputs to a file, 
+it always appends to the end of the file and offers no facilities for
+rotation, truncation or any other things you might expect from a more
+sophisticated log appender, it is anticipated that anything with more
+features would emerge in the modules ecosystem. 
+
+As well as the configuration attributes below, the C<classes> and
+C<levels> of C<Lumberjack::Dispatcher> can be provided when creating
+the instance.
+
+=head2 file
+
+This should be the path to the file which will have the log messages
+written to, an exception will be thrown if it can't be opened or if
+it isn't writeable. The file will be opened in append mode. If this
+isn't provided then C<handle> must be.
+
+=head2 handle
+
+This can be provided as an alternative to C<file> and should be an
+IO::Handle opened for writing that will be used to write the log
+messages, if this is provided it will be preferred to C<file> but
+if neither is provided then an exception will be thrown.
+
+=head2 format
+
+This is a format string for the output of the messages, the directives
+are described for the subroutine C<format-message> above.  The default
+is "%D [%L] %C %S : %M" which outputs: 
+
+   <date> [<Level>] <class> <method> : <message>  
+
+If you supply your own format you probably at least want to use "%M"
+to output the text of the message.
+
+=head2 callframes
+
+This is the number of callframes back from the top where the details of
+the actual callsite of the logging call that you are interesed in and is
+used to find the execution context of the logging message.  The default is
+4 which works well for using the L<Lumberjack::Logger|#Lumberjack::Logger>
+helper methods, but if you are creating your own Message objects and
+find that the subroutine name, line number and file or wrong then you
+may want to adjust this.
 
 =end pod
-
 
 use Staticish;
 
