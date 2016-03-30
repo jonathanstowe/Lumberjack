@@ -2,6 +2,8 @@
 
 A simple logging framework.
 
+[![Build Status](https://travis-ci.org/jonathanstowe/Lumberjack.svg?branch=master)](https://travis-ci.org/jonathanstowe/Lumberjack)
+
 ## Synopsis
 
 ```perl6
