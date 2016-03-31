@@ -10,7 +10,7 @@
    "provides" : {
       "Lumberjack" : "lib/Lumberjack.pm"
    },
-   "version" : "0.0.2",
+   "version" : "0.0.3",
    "test-depends" : [
       "Test",
       "IO::MiddleMan"
