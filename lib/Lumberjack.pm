@@ -154,10 +154,13 @@ the C<Error> messages to an C<error.log>.
 
     sub format-message(Str $format, Message $message, :&date-formatter = &default-date-formatter, Int :$callframes) returns Str is export(:FORMAT)
 
-This is a utility subroutine that is only exported when the C<:FORMAT> import adverb is applied to the use of C<Lumberjack>
-It provides a simple formatting of the messages with C<sprintf> like directives supplied in C<$format>. C<$callframes> indicates
-the number of frames to be skipped in the backtrace to find the frame we are interested in. C<&date-formatter> is a subroutine
-that accepts a DateTime and returns a formatted string (the default is RFC2822-like.)  The Format directives are:
+This is a utility subroutine that is only exported when the C<:FORMAT>
+import adverb is applied to the use of C<Lumberjack> It provides a simple
+formatting of the messages with C<sprintf> like directives supplied in
+C<$format>. C<$callframes> indicates the number of frames to be skipped in
+the backtrace to find the frame we are interested in. C<&date-formatter>
+is a subroutine that accepts a DateTime and returns a formatted string
+(the default is RFC2822-like.)  The Format directives are:
 
 =head3 %D
 
@@ -214,16 +217,15 @@ L<Lumberjack::Level|#Lumberjack::Level>.
 
 =head2 class
 
-This is the type object of the class that the message is
-for and will be populated by the logging methods of the
+This is the type object of the class that the message
+is for and will be populated by the logging methods of the
 L<Lumberjack::Logger|#Lumberjack::Logger> role.  If it is populated
 it will be used in two ways. firstly if it is a C<Lumberjack::Logger>
-the C<log-level> "class method" will be used to determine whether
-the message should be dispatched, that is if the level of the
-message is of a higher or equal "severity" than the C<log-level> 
-it will be dispatched, secondly it will be used to select which
-dispatchers it will be handed to by smart matching against the
-C<classes> of the dispatcher.
+the C<log-level> "class method" will be used to determine whether the
+message should be dispatched, that is if the level of the message is of a
+higher or equal "severity" than the C<log-level> it will be dispatched,
+secondly it will be used to select which dispatchers it will be handed
+to by smart matching against the C<classes> of the dispatcher.
 
 =head2 level
 
@@ -238,13 +240,13 @@ care of that for you however.
 
 =head2 backtrace
 
-This is a Backtrace object that represents the execution context when
-the log message is constructed, it can be used by the dispatcher to
-provide information about the call site.  It will be populated
-for you when the message is created, however if you are sending a 
-message, for example, about a caught exception you can supply a
-backtrace that came from elsewhere (though you may need to adjust
-the frames that the dispatcher examines accordingly.)
+This is a list of Backtrace::Frame object that represents the execution
+context when the log message is constructed, it can be used by the
+dispatcher to provide information about the call site.  It will be
+populated for you when the message is created, however if you are
+sending a message, for example, about a caught exception you can supply
+a backtrace that came from elsewhere (though you may need to adjust the
+frames that the dispatcher examines accordingly.)
 
 =head2 message
 
@@ -570,11 +572,11 @@ class Lumberjack is Static {
     has Level $.default-level is rw = Error;
 
     class Message {
-        has Mu          $.class;
-        has Level       $.level;
-        has Backtrace   $.backtrace;
-        has Str         $.message is required;
-        has DateTime    $.when;
+        has Mu                  $.class;
+        has Level               $.level;
+        has Backtrace::Frame    @.backtrace;
+        has Str                 $.message is required;
+        has DateTime            $.when;
 
         multi method ACCEPTS(Level $l) {
             $!level == $l;
@@ -584,12 +586,12 @@ class Lumberjack is Static {
             $!level;
         }
 
-        submethod BUILD(:$!class, Level :$!level, Backtrace :$!backtrace, Str :$!message!) is hidden-from-backtrace {
+        submethod BUILD(:$!class, Level :$!level, :@!backtrace, Str :$!message!) is hidden-from-backtrace {
             if not $!level.defined {
                 $!level = Lumberjack.default-level;
             }
-            if not $!backtrace.defined {
-                $!backtrace = Backtrace.new;
+            if not @!backtrace.elems {
+                @!backtrace = (Backtrace.new.list);
             }
             $!when = DateTime.now;
         }
@@ -617,9 +619,9 @@ class Lumberjack is Static {
         }
 
         multi method log(Level $level, Str $message) is hidden-from-backtrace {
-            my $backtrace = Backtrace.new;
+            my @backtrace = Backtrace.new.list;
             my $class = $?CLASS;
-            my $mess = Message.new(:$level, :$message, :$backtrace, :$class);
+            my $mess = Message.new(:$level, :$message, :@backtrace, :$class);
             samewith $mess;
         }
 
@@ -699,7 +701,7 @@ class Lumberjack is Static {
     }
 
     sub format-message(Str $format, Message $message, :&date-formatter = &default-date-formatter, Int :$callframes) returns Str is export(:FORMAT) {
-        my $message-frame = $callframes.defined ?? $message.backtrace[$callframes] !! $message.backtrace.list[*-1];
+        my $message-frame = $callframes.defined ?? $message.backtrace[$callframes] !! $message.backtrace[*-1];
         my %expressions =   D => { date-formatter($message.when) },
 						    P => { $*PID },
                             C => { $message.class.^name },
