@@ -97,7 +97,7 @@ https://github.com/jonathanstowe/Lumberjack/issues
 
 # License and Copyright
 
-This is free software, please see the LICENSE file for full description.
+This is free software, please see the LICENCE file for full description.
 
     © Jonathan Stowe 2016
 
