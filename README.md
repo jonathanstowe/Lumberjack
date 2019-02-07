@@ -96,5 +96,5 @@ https://github.com/jonathanstowe/Lumberjack/issues
 
 This is free software, please see the [LICENCE](LICENCE) file for full description.
 
-© Jonathan Stowe 2016, 2017
+© Jonathan Stowe 2016 - 2019
 

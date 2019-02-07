@@ -1,5 +1,9 @@
 {
   "name": "Lumberjack",
+  "version": "0.0.7",
+  "auth": "github:jonathanstowe",
+  "api": "1.0",
+  "description": "A simple logging framework.",
   "source-url": "git://github.com/jonathanstowe/Lumberjack.git",
   "support": {
     "source": "git://github.com/jonathanstowe/Lumberjack.git",
@@ -11,9 +15,9 @@
   ],
   "build-depends": [
   ],
-  "auth": "github:jonathanstowe",
   "depends": [
-    "DateTime::Format"
+    "DateTime::Format",
+    "Staticish"
   ],
   "tags": [
     "logger",
@@ -29,10 +33,8 @@
   "provides": {
     "Lumberjack": "lib/Lumberjack.pm"
   },
-  "version": "0.0.6",
   "authors": [
     "Jonathan Stowe <jns+gh@gellyfish.co.uk>"
   ],
-  "description": "A simple logging framework.",
   "meta-version": "0"
 }
