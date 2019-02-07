@@ -5,7 +5,7 @@ use v6;
 use Test;
 use Lumberjack;
 
-my $file = $*CWD.child('test-log');
+my $file = $*CWD.add('test-log');
 
 END {
     $file.unlink;
