@@ -546,6 +546,7 @@ may want to adjust this.
 
 =end pod
 
+use soft;
 use Staticish;
 
 class Lumberjack is Static {
@@ -608,7 +609,7 @@ class Lumberjack is Static {
     role Logger {
         my Level $level;
 
-        method log-level() returns Level is rw {
+        method log-level( --> Level ) is rw {
             $level;
         }
 
@@ -695,12 +696,12 @@ class Lumberjack is Static {
         });
     }
 
-    sub default-date-formatter(DateTime $date-time) returns Str {
+    sub default-date-formatter(DateTime $date-time --> Str ) {
         use DateTime::Format::RFC2822;
         DateTime::Format::RFC2822.new.to-string($date-time);
     }
 
-    sub format-message(Str $format, Message $message, :&date-formatter = &default-date-formatter, Int :$callframes) returns Str is export(:FORMAT) {
+    sub format-message(Str $format, Message $message, :&date-formatter = &default-date-formatter, Int :$callframes --> Str ) is export(:FORMAT) {
         my $message-frame = $callframes.defined ?? $message.backtrace[$callframes] !! $message.backtrace[*-1];
         my %expressions =   D => { date-formatter($message.when) },
 						    P => { $*PID },
