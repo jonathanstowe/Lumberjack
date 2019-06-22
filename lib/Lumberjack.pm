@@ -842,7 +842,7 @@ class Lumberjack {
         has Int         $.callframes = 4;
         has Str         $.format = "%D [%L] %C %S : %M"; 
 
-        class X::NoFile is Exception {
+        class X::Lumberjack::NoFile is Exception {
             has Str $.message = "One of file or handle must be provided";
         }
 
@@ -852,7 +852,7 @@ class Lumberjack {
                     $!handle = $!file.IO.open(:a);
                 }
                 else {
-                    X::NoFile.new.throw;
+                    X::Lumberjack::NoFile.new.throw;
                 }
             }
             $!handle.say: format-message($!format, $message, callframes => $!callframes);
