@@ -16,7 +16,7 @@ use Lumberjack;
 Lumberjack.dispatchers.append: Lumberjack::Dispatcher::Console.new(:colours);
 
 class MyClass does Lumberjack::Logger {
-	method start() {
+    method start() {
        self.log-info("Starting ...");
        ...
    }
@@ -71,7 +71,7 @@ you can provide your own as required.
 
 The main C<Lumberjack> class operates as if all the methods and attributes
 are 'static', that is to say they are wrapped under the hood to be invoked
-against a single instance that is created the first time it is needed. 
+against a single instance that is created the first time it is needed.
 
 =head2 method log
 
@@ -80,7 +80,7 @@ against a single instance that is created the first time it is needed.
 This injects the L<Lumberjack::Message|#Lumberjack::Message> into the
 dispatch mechanism, it is typically called by the methods provided by
 the role L<Lumberjack::Logger|#Lumberjack::Logger> though you may call
-this directly if you wish to create your own message and/or dispatch 
+this directly if you wish to create your own message and/or dispatch
 the message outside of any particular class.
 
 =head2 all-messages
@@ -120,12 +120,12 @@ at level C<Debug>.
 This is a Supply derived from C<all-messages> that only has the messages
 at level C<Trace>.
 
-=head2 filtered-messages 
+=head2 filtered-messages
 
 This is a Supply that is filtered to be only those that will be candidates
-for dispatch.  To be a candidate the C<level> of the message must be 
+for dispatch.  To be a candidate the C<level> of the message must be
 equal to or of higher "severity" (lower numerical value,) than the C<log-level>
-of the class the message is for, or (if the class is unknown,) the 
+of the class the message is for, or (if the class is unknown,) the
 C<default-log-level>. This is tapped internally to feed the dispatchers, but
 you could tap this yourself if you want to send the filtered messages to an
 alternative logging system.
@@ -209,7 +209,7 @@ to provide different attributes if you have different requirements and
 the dispatchers that you are using would make use of them.
 
 The messages themselves contain the information required to determine
-whether they will becomes candidates for dispatch and select which 
+whether they will becomes candidates for dispatch and select which
 dispatchers (if any,) they will be sent to.
 
 The messages can be smart matched against items of the enum
@@ -267,7 +267,7 @@ of the the messages that is will handle. The actual dispatchers
 should be instances of your classes and can have any configuration
 required for them to work.
 
-There are two simple dispatcher classes provided in the module 
+There are two simple dispatcher classes provided in the module
 and others might be found in the module ecosystem.
 
 Whilst you are free to implement the dispatcher however you wish
@@ -389,7 +389,7 @@ C<Fatal> or C<Off>.
         method log-fatal(Str() $message)
 
 This will send a message at level C<Fatal> with the supplied C<message>. It will
-always be sent for dispatch except if the applicable level is C<Off>. Despite 
+always be sent for dispatch except if the applicable level is C<Off>. Despite
 its name the behaviour does not differ from the other levels, if you wish to
 actually exit the program you should do this in your own code.
 
@@ -413,7 +413,7 @@ Listed in decreasing "severity" (which is increasing numeric value,):
 
 =head2 Off
 
-No messages will be sent. 
+No messages will be sent.
 
 =head2 Fatal
 
@@ -471,9 +471,9 @@ handle opened to a sufficiently display-like device.
 
 This is a format string for the output of the messages, the directives
 are described for the subroutine C<format-message> above.  The default
-is "%D [%L] %C %S : %M" which outputs: 
+is "%D [%L] %C %S : %M" which outputs:
 
-   <date> [<Level>] <class> <method> : <message>  
+   <date> [<Level>] <class> <method> : <message>
 
 If you supply your own format you probably at least want to use "%M"
 to output the text of the message.
@@ -499,11 +499,11 @@ supply all of them.
 
 =head1 Lumberjack::Dispatcher::File
 
-This is a very simple dispatcher implementation that outputs to a file, 
+This is a very simple dispatcher implementation that outputs to a file,
 it always appends to the end of the file and offers no facilities for
 rotation, truncation or any other things you might expect from a more
 sophisticated log appender, it is anticipated that anything with more
-features would emerge in the modules ecosystem. 
+features would emerge in the modules ecosystem.
 
 As well as the configuration attributes below, the C<classes> and
 C<levels> of C<Lumberjack::Dispatcher> can be provided when creating
@@ -527,9 +527,9 @@ if neither is provided then an exception will be thrown.
 
 This is a format string for the output of the messages, the directives
 are described for the subroutine C<format-message> above.  The default
-is "%D [%L] %C %S : %M" which outputs: 
+is "%D [%L] %C %S : %M" which outputs:
 
-   <date> [<Level>] <class> <method> : <message>  
+   <date> [<Level>] <class> <method> : <message>
 
 If you supply your own format you probably at least want to use "%M"
 to output the text of the message.
@@ -736,7 +736,7 @@ class Lumberjack {
 
     role Dispatcher {
         has Mu $.levels   = Level;
-        has Mu $.classes; 
+        has Mu $.classes;
 
         method log(Message $message) {
             ...
@@ -755,8 +755,8 @@ class Lumberjack {
         @!dispatchers;
     }
 
-    has Supply $.filtered-messages; 
-    
+    has Supply $.filtered-messages;
+
     proto method filtered-messages(|c) { * }
 
     multi method filtered-messages(Lumberjack:U:) returns Supply {
@@ -807,7 +807,7 @@ class Lumberjack {
     sub format-message(Str $format, Message $message, :&date-formatter = &default-date-formatter, Int :$callframes --> Str ) is export(:FORMAT) {
         my $message-frame = $callframes.defined ?? $message.backtrace[$callframes] !! $message.backtrace[*-1];
         my %expressions =   D => { date-formatter($message.when) },
-						    P => { $*PID },
+                		    P => { $*PID },
                             C => { $message.class.^name },
                             L => { $message.level.Str },
                             M => { $message.message },
@@ -818,11 +818,16 @@ class Lumberjack {
         $format.subst(/'%'(<{%expressions.keys}>)/, -> $/ { %expressions{~$0}.() }, :g);
     }
 
+    sub default-callframes( --> Int) {
+        my $comp = ($*RAKU // $*PERL).compiler;
+         $comp.name eq 'rakudo' && $comp.version < v2020.02.1.109.g7c3681647 ?? 4 !! 2;
+    }
+
     class Dispatcher::Console does Dispatcher {
         has Bool        $.colour = False;
         has IO::Handle  $.handle = $*ERR;
-        has Str         $.format = "%D [%L] %C %S : %M"; 
-        has Int         $.callframes = 4;
+        has Str         $.format = "%D [%L] %C %S : %M";
+        has Int         $.callframes = default-callframes();
         has Int         %.colours   = Trace => 23,
                                       Debug => 21,
                                       Info  => 40,
@@ -839,8 +844,8 @@ class Lumberjack {
     class Dispatcher::File does Dispatcher {
         has Str         $.file;
         has IO::Handle  $.handle;
-        has Int         $.callframes = 4;
-        has Str         $.format = "%D [%L] %C %S : %M"; 
+        has Int         $.callframes = default-callframes();
+        has Str         $.format = "%D [%L] %C %S : %M";
 
         class X::Lumberjack::NoFile is Exception {
             has Str $.message = "One of file or handle must be provided";
