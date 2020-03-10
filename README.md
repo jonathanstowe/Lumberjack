@@ -67,8 +67,7 @@ you can provide your own as required.
 
 ## Installation
 
-Assuming you have a working Rakudo perl 6 installation you should be
-able to install this directly with zef:
+Assuming you have a working Rakudo installation you should be able to install this directly with zef:
 
     zef install Lumberjack
 
@@ -89,12 +88,11 @@ provided by some extension and would be useful to others please let me
 know. And of course if you find that it has some unanticipated bug I'd
 also like to know.
 
-Reports, requests, suggestions and patches can be sent to
-https://github.com/jonathanstowe/Lumberjack/issues
+Reports, requests, suggestions and patches can be sent to [github](https://github.com/jonathanstowe/Lumberjack/issues)
 
 # Licence and Copyright
 
 This is free software, please see the [LICENCE](LICENCE) file for full description.
 
-© Jonathan Stowe 2016 - 2019
+© Jonathan Stowe 2016 - 2020
 

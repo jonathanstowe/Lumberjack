@@ -1,12 +1,12 @@
 {
   "name": "Lumberjack",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "auth": "github:jonathanstowe",
   "api": "1.0",
   "description": "A simple logging framework.",
-  "source-url": "git://github.com/jonathanstowe/Lumberjack.git",
+  "source-url": "https://github.com/jonathanstowe/Lumberjack.git",
   "support": {
-    "source": "git://github.com/jonathanstowe/Lumberjack.git",
+    "source": "https://github.com/jonathanstowe/Lumberjack.git",
 	"bugtracker" : "https://github.com/jonathanstowe/Lumberjack/issues",
 	"email" : "jns+gh@gellyfish.co.uk"
   },
@@ -35,5 +35,5 @@
   "authors": [
     "Jonathan Stowe <jns+gh@gellyfish.co.uk>"
   ],
-  "meta-version": "0"
+  "meta-version": "1"
 }
