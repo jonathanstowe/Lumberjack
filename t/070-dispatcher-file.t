@@ -60,12 +60,12 @@ my $fh = $file.open(:r);
 
 my $content = $fh.slurp-rest;
 
-like $content, /'[Trace] Banana do-trace : trace message'/, "got expected text for trace";
-like $content, /'[Debug] Banana do-debug : debug message'/, "got expected text for debug";
-like $content, /'[Info] Banana do-info : info message'/, "got expected text for info";
-like $content, /'[Warn] Banana do-warn : warn message'/, "got expected text for warn";
-like $content, /'[Error] Banana do-error : error message'/, "got expected text for error";
-like $content, /'[Fatal] Banana do-fatal : fatal message'/, "got expected text for fatal";
+like $content, /'[Trace] Banana log : trace message'/, "got expected text for trace";
+like $content, /'[Debug] Banana log : debug message'/, "got expected text for debug";
+like $content, /'[Info] Banana log : info message'/, "got expected text for info";
+like $content, /'[Warn] Banana log : warn message'/, "got expected text for warn";
+like $content, /'[Error] Banana log : error message'/, "got expected text for error";
+like $content, /'[Fatal] Banana log : fatal message'/, "got expected text for fatal";
 
 
 done-testing;

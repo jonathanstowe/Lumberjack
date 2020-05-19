@@ -38,64 +38,64 @@ my $banana = Banana.new;
 
 lives-ok { $banana.do-trace }, "trace";
 
-like $hijack.Str, /'[Trace] Banana do-trace : trace message'/, "got expected text";
+like $hijack.Str, /'[Trace] Banana log : trace message'/, "got expected text";
 $hijack.data = ();
 
 lives-ok { $banana.do-debug }, "debug";
 
-like $hijack.Str, /'[Debug] Banana do-debug : debug message'/, "got expected text";
+like $hijack.Str, /'[Debug] Banana log : debug message'/, "got expected text";
 $hijack.data = ();
 
 lives-ok { $banana.do-info }, "info";
 
-like $hijack.Str, /'[Info] Banana do-info : info message'/, "got expected text";
+like $hijack.Str, /'[Info] Banana log : info message'/, "got expected text";
 $hijack.data = ();
 
 lives-ok { $banana.do-warn }, "warn";
 
-like $hijack.Str, /'[Warn] Banana do-warn : warn message'/, "got expected text";
+like $hijack.Str, /'[Warn] Banana log : warn message'/, "got expected text";
 $hijack.data = ();
 
 lives-ok { $banana.do-error }, "error";
 
-like $hijack.Str, /'[Error] Banana do-error : error message'/, "got expected text";
+like $hijack.Str, /'[Error] Banana log : error message'/, "got expected text";
 $hijack.data = ();
 
 lives-ok { $banana.do-fatal }, "fatal";
 
-like $hijack.Str, /'[Fatal] Banana do-fatal : fatal message'/, "got expected text";
+like $hijack.Str, /'[Fatal] Banana log : fatal message'/, "got expected text";
 $hijack.data = ();
 
 Lumberjack.dispatchers = ( Lumberjack::Dispatcher::Console.new(:colour));
 
 lives-ok { $banana.do-trace }, "trace with colour";
 
-like $hijack.Str, /'[Trace] Banana do-trace : trace message'/, "got expected text";
+like $hijack.Str, /'[Trace] Banana log : trace message'/, "got expected text";
 $hijack.data = ();
 
 lives-ok { $banana.do-debug }, "debug with colour";
 
-like $hijack.Str, /'[Debug] Banana do-debug : debug message'/, "got expected text";
+like $hijack.Str, /'[Debug] Banana log : debug message'/, "got expected text";
 $hijack.data = ();
 
 lives-ok { $banana.do-info }, "info with colour";
 
-like $hijack.Str, /'[Info] Banana do-info : info message'/, "got expected text";
+like $hijack.Str, /'[Info] Banana log : info message'/, "got expected text";
 $hijack.data = ();
 
 lives-ok { $banana.do-warn }, "warn with colour";
 
-like $hijack.Str, /'[Warn] Banana do-warn : warn message'/, "got expected text";
+like $hijack.Str, /'[Warn] Banana log : warn message'/, "got expected text";
 $hijack.data = ();
 
 lives-ok { $banana.do-error }, "error with colour";
 
-like $hijack.Str, /'[Error] Banana do-error : error message'/, "got expected text";
+like $hijack.Str, /'[Error] Banana log : error message'/, "got expected text";
 $hijack.data = ();
 
 lives-ok { $banana.do-fatal }, "fatal with colour";
 
-like $hijack.Str, /'[Fatal] Banana do-fatal : fatal message'/, "got expected text";
+like $hijack.Str, /'[Fatal] Banana log : fatal message'/, "got expected text";
 $hijack.data = ();
 
 done-testing;
