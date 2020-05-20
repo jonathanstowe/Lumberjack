@@ -819,8 +819,7 @@ class Lumberjack {
     }
 
     sub default-callframes( --> Int) {
-        my $comp = ($*RAKU // $*PERL).compiler;
-         $comp.name eq 'rakudo' && $comp.version < v2020.02.1.109.g7c3681647 ?? 4 !! 2;
+        4;
     }
 
     class Dispatcher::Console does Dispatcher {

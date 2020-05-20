@@ -75,6 +75,7 @@ Or if you have the source code locally:
 
     zef install .
 
+For a brief period between the 2020.02 and 2020.05 releases of Rakudo the `Backtrace` implementation in `rakudo` changed in a way that breaks the tests, so if you see test failures with a Rakudo you are probably safe to use `--force-install`.
 
 ## Support
 

@@ -1,3 +1,5 @@
+v0.0.11		Wed 20 May 09:11:17 BST 2020
+	* Put the Backtrace handling back as it was
 v0.0.10		Tue 10 Mar 19:43:43 GMT 2020
 	* Alter Backtrace handling for 2020.03
 v0.0.9		Sat 22 Jun 13:59:58 BST 2019
