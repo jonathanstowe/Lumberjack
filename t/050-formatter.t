@@ -1,4 +1,4 @@
-#!perl6
+#!raku
 
 use v6;
 
@@ -22,4 +22,4 @@ is format-message("[%l]", $message), '[10]', '%l works';
 
 
 done-testing;
-# vim: expandtab shiftwidth=4 ft=perl6
+# vim: expandtab shiftwidth=4 ft=raku

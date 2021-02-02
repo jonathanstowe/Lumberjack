@@ -1,4 +1,4 @@
-#!perl6
+#!raku
 
 use v6;
 
@@ -69,4 +69,4 @@ like $content, /'[Fatal] Banana do-fatal : fatal message'/, "got expected text f
 
 
 done-testing;
-# vim: expandtab shiftwidth=4 ft=perl6
+# vim: expandtab shiftwidth=4 ft=raku

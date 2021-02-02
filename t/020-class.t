@@ -1,4 +1,4 @@
-#!perl6
+#!raku
 
 use v6;
 
@@ -50,4 +50,4 @@ is @filtered-messages.elems, 1, "but still got one in filtered because higher le
 is $dispatcher.messages.elems, @filtered-messages.elems, "and our dispatcher saw the right number too";
 
 done-testing;
-# vim: expandtab shiftwidth=4 ft=perl6
+# vim: expandtab shiftwidth=4 ft=raku

@@ -2,11 +2,11 @@
 
 A simple logging framework.
 
-[![Build Status](https://travis-ci.org/jonathanstowe/Lumberjack.svg?branch=master)](https://travis-ci.org/jonathanstowe/Lumberjack)
+![Build Status](https://github.com/jonathanstowe/Lumberjack/workflows/CI/badge.svg)
 
 ## Synopsis
 
-```perl6
+```raku
 
 use Lumberjack;
 
@@ -95,5 +95,5 @@ Reports, requests, suggestions and patches can be sent to [github](https://githu
 
 This is free software, please see the [LICENCE](LICENCE) file for full description.
 
-© Jonathan Stowe 2016 - 2020
+© Jonathan Stowe 2016 - 2021
 

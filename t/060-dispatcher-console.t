@@ -1,4 +1,4 @@
-#!perl6
+#!raku
 
 use v6;
 
@@ -99,4 +99,4 @@ like $hijack.Str, /'[Fatal] Banana do-fatal : fatal message'/, "got expected tex
 $hijack.data = ();
 
 done-testing;
-# vim: expandtab shiftwidth=4 ft=perl6
+# vim: expandtab shiftwidth=4 ft=raku

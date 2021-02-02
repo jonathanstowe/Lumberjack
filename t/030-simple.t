@@ -1,4 +1,4 @@
-#!perl6
+#!raku
 
 use v6;
 
@@ -44,4 +44,4 @@ for Lumberjack::Level.enums.values.sort.reverse.map({Lumberjack::Level($_)}) -> 
 }
 
 done-testing;
-# vim: expandtab shiftwidth=4 ft=perl6
+# vim: expandtab shiftwidth=4 ft=raku
