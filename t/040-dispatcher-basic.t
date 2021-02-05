@@ -9,6 +9,9 @@ use Lumberjack;
 class Client does Lumberjack::Logger {
 }
 
+class Client2 does Lumberjack::Logger {
+}
+
 class DispatcherX does Lumberjack::Dispatcher {
     has Lumberjack::Message @.messages;
     method log(Lumberjack::Message $message) {
@@ -18,28 +21,78 @@ class DispatcherX does Lumberjack::Dispatcher {
 
 Client.log-level = Lumberjack::All;
 
-my DispatcherX %dispatchers{Lumberjack::Level};
 
-for Lumberjack::Level.enums.values.sort.reverse.map({Lumberjack::Level($_)}) -> $level {
-    my $dispatcher = DispatcherX.new(levels => $level);
-    Lumberjack.dispatchers.append: $dispatcher;
-    %dispatchers{$level} = $dispatcher;
-}
-
-my $foo = Client.new;
-
-lives-ok { $foo.log-trace("trace message") }, "send log-trace";
-lives-ok { $foo.log-debug("debug message") }, "send log-debug";
-lives-ok { $foo.log-info("info message") }, "send log-info";
-lives-ok { $foo.log-warn("warning message") }, "send log-warning";
-lives-ok { $foo.log-error("error message") }, "send log-error";
-lives-ok { $foo.log-fatal("fatal message") }, "send log-fatal";
-
-for %dispatchers.values -> $dispatcher {
-    if $dispatcher.levels !~~ Lumberjack::All|Lumberjack::Off {
-        is $dispatcher.messages.elems, 1, "and dispatcher with level { $dispatcher.levels } has 1";
+subtest {
+    my DispatcherX %dispatchers{Lumberjack::Level};
+    for Lumberjack::Level.enums.values.sort.reverse.map({Lumberjack::Level($_)}) -> $level {
+        my $dispatcher = DispatcherX.new(levels => $level);
+        Lumberjack.dispatchers.append: $dispatcher;
+        %dispatchers{$level} = $dispatcher;
     }
-}
+
+    my $foo = Client.new;
+
+    lives-ok { $foo.log-trace("trace message") }, "send log-trace";
+    lives-ok { $foo.log-debug("debug message") }, "send log-debug";
+    lives-ok { $foo.log-info("info message") }, "send log-info";
+    lives-ok { $foo.log-warn("warning message") }, "send log-warning";
+    lives-ok { $foo.log-error("error message") }, "send log-error";
+    lives-ok { $foo.log-fatal("fatal message") }, "send log-fatal";
+
+    for %dispatchers.values -> $dispatcher {
+        if $dispatcher.levels !~~ Lumberjack::All|Lumberjack::Off {
+            is $dispatcher.messages.elems, 1, "and dispatcher with level { $dispatcher.levels } has 1";
+        }
+    }
+}, "dispatcher level - no class";
+
+subtest {
+    my DispatcherX %dispatchers{Lumberjack::Level};
+    for Lumberjack::Level.enums.values.sort.reverse.map({Lumberjack::Level($_)}) -> $level {
+        my $dispatcher = DispatcherX.new(levels => $level, classes => (Client2));
+        Lumberjack.dispatchers.append: $dispatcher;
+        %dispatchers{$level} = $dispatcher;
+    }
+
+    my $foo = Client.new;
+
+    lives-ok { $foo.log-trace("trace message") }, "send log-trace";
+    lives-ok { $foo.log-debug("debug message") }, "send log-debug";
+    lives-ok { $foo.log-info("info message") }, "send log-info";
+    lives-ok { $foo.log-warn("warning message") }, "send log-warning";
+    lives-ok { $foo.log-error("error message") }, "send log-error";
+    lives-ok { $foo.log-fatal("fatal message") }, "send log-fatal";
+
+    for %dispatchers.values -> $dispatcher {
+        if $dispatcher.levels !~~ Lumberjack::All|Lumberjack::Off {
+            is $dispatcher.messages.elems, 0, "and dispatcher with level { $dispatcher.levels } has 0 with a different class specified";
+        }
+    }
+}, "dispatcher level - with non-matching class";
+
+subtest {
+    my DispatcherX %dispatchers{Lumberjack::Level};
+    for Lumberjack::Level.enums.values.sort.reverse.map({Lumberjack::Level($_)}) -> $level {
+        my $dispatcher = DispatcherX.new(levels => $level, classes => (Client));
+        Lumberjack.dispatchers.append: $dispatcher;
+        %dispatchers{$level} = $dispatcher;
+    }
+
+    my $foo = Client.new;
+
+    lives-ok { $foo.log-trace("trace message") }, "send log-trace";
+    lives-ok { $foo.log-debug("debug message") }, "send log-debug";
+    lives-ok { $foo.log-info("info message") }, "send log-info";
+    lives-ok { $foo.log-warn("warning message") }, "send log-warning";
+    lives-ok { $foo.log-error("error message") }, "send log-error";
+    lives-ok { $foo.log-fatal("fatal message") }, "send log-fatal";
+
+    for %dispatchers.values -> $dispatcher {
+        if $dispatcher.levels !~~ Lumberjack::All|Lumberjack::Off {
+            is $dispatcher.messages.elems, 1, "and dispatcher with level { $dispatcher.levels } has 1 with a matching class specified";
+        }
+    }
+}, "dispatcher level - with matching class";
 
 done-testing;
 # vim: expandtab shiftwidth=4 ft=raku

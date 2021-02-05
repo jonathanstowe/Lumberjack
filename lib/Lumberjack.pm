@@ -13,7 +13,7 @@ Lumberjack - A simple logging framework.
 use Lumberjack;
 
 # Output to $*ERR by default - in colour!
-Lumberjack.dispatchers.append: Lumberjack::Dispatcher::Console.new(:colours);
+Lumberjack.dispatchers.append: Lumberjack::Dispatcher::Console.new(:colour);
 
 class MyClass does Lumberjack::Logger {
     method start() {
@@ -126,11 +126,11 @@ This is a Supply that is filtered to be only those that will be candidates
 for dispatch.  To be a candidate the C<level> of the message must be
 equal to or of higher "severity" (lower numerical value,) than the C<log-level>
 of the class the message is for, or (if the class is unknown,) the
-C<default-log-level>. This is tapped internally to feed the dispatchers, but
+C<default-level>. This is tapped internally to feed the dispatchers, but
 you could tap this yourself if you want to send the filtered messages to an
 alternative logging system.
 
-=head2 default-log-level
+=head2 default-level
 
 This is the default level that is used to filter the messages when the
 class of the message is unknown (or has no level set.) It may also be
@@ -231,10 +231,10 @@ to by smart matching against the C<classes> of the dispatcher.
 
 This is the L<Lumberjack::Level|#Lumberjack::Level> representing
 the level or severity of the message, it will be checked against
-the C<log-level> of C<class> if available, or the C<default-log-level>
+the C<log-level> of C<class> if available, or the C<default-level>
 to determine whether the message should be a candidate for dispatch.
 If this is not provided to the constructor for the message object then
-it will be set to the C<default-log-level> which is probably not what
+it will be set to the C<default-level> which is probably not what
 you want. The helpers in L<Lumberjack::Logger|#Lumberjack::Logger> take
 care of that for you however.
 
@@ -690,7 +690,7 @@ class Lumberjack {
     }
 
     role Logger {
-        my Level $level;
+        my Level $level = Lumberjack::All;
 
         method log-level( --> Level ) is rw {
             $level;

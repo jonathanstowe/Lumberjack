@@ -9,10 +9,10 @@ SYNOPSIS
     use Lumberjack;
 
     # Output to $*ERR by default - in colour!
-    Lumberjack.dispatchers.append: Lumberjack::Dispatcher::Console.new(:colours);
+    Lumberjack.dispatchers.append: Lumberjack::Dispatcher::Console.new(:colour);
 
     class MyClass does Lumberjack::Logger {
-	    method start() {
+        method start() {
            self.log-info("Starting ...");
            ...
        }
@@ -48,14 +48,14 @@ There are a couple of simple log dispatchers included which should get you start
 METHODS
 =======
 
-The main `Lumberjack` class operates as if all the methods and attributes are 'static', that is to say they are wrapped under the hood to be invoked against a single instance that is created the first time it is needed. 
+The main `Lumberjack` class operates as if all the methods and attributes are 'static', that is to say they are wrapped under the hood to be invoked against a single instance that is created the first time it is needed.
 
 method log
 ----------
 
     method log(Message $message)
 
-This injects the [Lumberjack::Message](#Lumberjack::Message) into the dispatch mechanism, it is typically called by the methods provided by the role [Lumberjack::Logger](#Lumberjack::Logger) though you may call this directly if you wish to create your own message and/or dispatch  the message outside of any particular class.
+This injects the [Lumberjack::Message](#Lumberjack::Message) into the dispatch mechanism, it is typically called by the methods provided by the role [Lumberjack::Logger](#Lumberjack::Logger) though you may call this directly if you wish to create your own message and/or dispatch the message outside of any particular class.
 
 all-messages
 ------------
@@ -92,13 +92,13 @@ trace-messages
 
 This is a Supply derived from `all-messages` that only has the messages at level `Trace`.
 
-filtered-messages 
-------------------
-
-This is a Supply that is filtered to be only those that will be candidates for dispatch. To be a candidate the `level` of the message must be  equal to or of higher "severity" (lower numerical value,) than the `log-level` of the class the message is for, or (if the class is unknown,) the  `default-log-level`. This is tapped internally to feed the dispatchers, but you could tap this yourself if you want to send the filtered messages to an alternative logging system.
-
-default-log-level
+filtered-messages
 -----------------
+
+This is a Supply that is filtered to be only those that will be candidates for dispatch. To be a candidate the `level` of the message must be equal to or of higher "severity" (lower numerical value,) than the `log-level` of the class the message is for, or (if the class is unknown,) the `default-level`. This is tapped internally to feed the dispatchers, but you could tap this yourself if you want to send the filtered messages to an alternative logging system.
+
+default-level
+-------------
 
 This is the default level that is used to filter the messages when the class of the message is unknown (or has no level set.) It may also be used to set a default on new messages when the level isn't supplied (but this is almost certainly not what you want to do.) The default is `Info`.
 
@@ -155,24 +155,24 @@ Lumberjack::Message
 
 Objects of this class represent the messages that are passing through the logger, in the simplest case where one is using the methods provided by the role [Lumberjack::Logger](#Lumberjack::Logger) then these objects will be created for you with sensible defaults. You are free to create them yourself if you want other values than the defaults or you can sub-class to provide different attributes if you have different requirements and the dispatchers that you are using would make use of them.
 
-The messages themselves contain the information required to determine whether they will becomes candidates for dispatch and select which  dispatchers (if any,) they will be sent to.
+The messages themselves contain the information required to determine whether they will becomes candidates for dispatch and select which dispatchers (if any,) they will be sent to.
 
 The messages can be smart matched against items of the enum [Lumberjack::Level](#Lumberjack::Level).
 
 class
 -----
 
-This is the type object of the class that the message is for and will be populated by the logging methods of the [Lumberjack::Logger](#Lumberjack::Logger) role. If it is populated it will be used in two ways. firstly if it is a `Lumberjack::Logger` the `log-level` "class method" will be used to determine whether the message should be dispatched, that is if the level of the message is of a higher or equal "severity" than the `log-level`  it will be dispatched, secondly it will be used to select which dispatchers it will be handed to by smart matching against the `classes` of the dispatcher.
+This is the type object of the class that the message is for and will be populated by the logging methods of the [Lumberjack::Logger](#Lumberjack::Logger) role. If it is populated it will be used in two ways. firstly if it is a `Lumberjack::Logger` the `log-level` "class method" will be used to determine whether the message should be dispatched, that is if the level of the message is of a higher or equal "severity" than the `log-level` it will be dispatched, secondly it will be used to select which dispatchers it will be handed to by smart matching against the `classes` of the dispatcher.
 
 level
 -----
 
-This is the [Lumberjack::Level](#Lumberjack::Level) representing the level or severity of the message, it will be checked against the `log-level` of `class` if available, or the `default-log-level` to determine whether the message should be a candidate for dispatch. If this is not provided to the constructor for the message object then it will be set to the `default-log-level` which is probably not what you want. The helpers in [Lumberjack::Logger](#Lumberjack::Logger) take care of that for you however.
+This is the [Lumberjack::Level](#Lumberjack::Level) representing the level or severity of the message, it will be checked against the `log-level` of `class` if available, or the `default-level` to determine whether the message should be a candidate for dispatch. If this is not provided to the constructor for the message object then it will be set to the `default-level` which is probably not what you want. The helpers in [Lumberjack::Logger](#Lumberjack::Logger) take care of that for you however.
 
 backtrace
 ---------
 
-This is a Backtrace object that represents the execution context when the log message is constructed, it can be used by the dispatcher to provide information about the call site. It will be populated for you when the message is created, however if you are sending a  message, for example, about a caught exception you can supply a backtrace that came from elsewhere (though you may need to adjust the frames that the dispatcher examines accordingly.)
+This is a list of Backtrace::Frame object that represents the execution context when the log message is constructed, it can be used by the dispatcher to provide information about the call site. It will be populated for you when the message is created, however if you are sending a message, for example, about a caught exception you can supply a backtrace that came from elsewhere (though you may need to adjust the frames that the dispatcher examines accordingly.)
 
 message
 -------
@@ -189,7 +189,7 @@ Lumberjack::Dispatcher
 
 This is role that must be consumed by your dispatcher classes, it defines the interface for dispatch and for the selection of the the messages that is will handle. The actual dispatchers should be instances of your classes and can have any configuration required for them to work.
 
-There are two simple dispatcher classes provided in the module  and others might be found in the module ecosystem.
+There are two simple dispatcher classes provided in the module and others might be found in the module ecosystem.
 
 Whilst you are free to implement the dispatcher however you wish you should bear in mind that if you require a `BUILD` method and wish to populate the `levels` and `classes` attributes then you have to provide for them in your signaturem such as:
 
@@ -276,7 +276,7 @@ method log-fatal
 
     method log-fatal(Str() $message)
 
-This will send a message at level `Fatal` with the supplied `message`. It will always be sent for dispatch except if the applicable level is `Off`. Despite  its name the behaviour does not differ from the other levels, if you wish to actually exit the program you should do this in your own code.
+This will send a message at level `Fatal` with the supplied `message`. It will always be sent for dispatch except if the applicable level is `Off`. Despite its name the behaviour does not differ from the other levels, if you wish to actually exit the program you should do this in your own code.
 
 Lumberjack::Level
 =================
@@ -292,7 +292,7 @@ Listed in decreasing "severity" (which is increasing numeric value,):
 Off
 ---
 
-No messages will be sent. 
+No messages will be sent.
 
 Fatal
 -----
@@ -347,7 +347,7 @@ This is an IO::Handle to which output will be made, the default is the STDERR ha
 format
 ------
 
-This is a format string for the output of the messages, the directives are described for the subroutine `format-message` above. The default is "%D [%L] %C %S : %M" which outputs: 
+This is a format string for the output of the messages, the directives are described for the subroutine `format-message` above. The default is "%D [%L] %C %S : %M" which outputs:
 
     <date> [<Level>] <class> <method> : <message>
 
@@ -366,7 +366,7 @@ This is colour map from the log-level of the message to a colour expressed as an
 Lumberjack::Dispatcher::File
 ============================
 
-This is a very simple dispatcher implementation that outputs to a file,  it always appends to the end of the file and offers no facilities for rotation, truncation or any other things you might expect from a more sophisticated log appender, it is anticipated that anything with more features would emerge in the modules ecosystem. 
+This is a very simple dispatcher implementation that outputs to a file, it always appends to the end of the file and offers no facilities for rotation, truncation or any other things you might expect from a more sophisticated log appender, it is anticipated that anything with more features would emerge in the modules ecosystem.
 
 As well as the configuration attributes below, the `classes` and `levels` of `Lumberjack::Dispatcher` can be provided when creating the instance.
 
@@ -383,7 +383,7 @@ This can be provided as an alternative to `file` and should be an IO::Handle ope
 format
 ------
 
-This is a format string for the output of the messages, the directives are described for the subroutine `format-message` above. The default is "%D [%L] %C %S : %M" which outputs: 
+This is a format string for the output of the messages, the directives are described for the subroutine `format-message` above. The default is "%D [%L] %C %S : %M" which outputs:
 
     <date> [<Level>] <class> <method> : <message>
 
@@ -393,3 +393,4 @@ callframes
 ----------
 
 This is the number of callframes back from the top where the details of the actual callsite of the logging call that you are interesed in and is used to find the execution context of the logging message. The default is 4 which works well for using the [Lumberjack::Logger](#Lumberjack::Logger) helper methods, but if you are creating your own Message objects and find that the subroutine name, line number and file or wrong then you may want to adjust this.
+

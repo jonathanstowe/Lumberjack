@@ -1,3 +1,6 @@
+v0.1.1		Fri  5 Feb 07:43:15 GMT 2021
+	* Sensible default for Logger.level
+	* Amend documentation to reflect reality
 v0.1.0		Tue  2 Feb 12:27:26 GMT 2021
 	* Spring clean
 	* Switch to GH Actions for CI

@@ -11,7 +11,7 @@ A simple logging framework.
 use Lumberjack;
 
 # Output to $*ERR by default - in colour!
-Lumberjack.dispatchers.append: Lumberjack::Dispatcher::Console.new(:colours);
+Lumberjack.dispatchers.append: Lumberjack::Dispatcher::Console.new(:colour);
 
 class MyClass does Lumberjack::Logger {
 	method start() {
