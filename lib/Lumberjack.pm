@@ -566,7 +566,7 @@ class Lumberjack {
     }
 
     multi method all-messages(Lumberjack:D:) returns Supply {
-        $!all-messages;
+        $!all-messages //= $!supplier.Supply;
     }
 
     enum Level <Off Fatal Error Warn Info Debug Trace All> does role {
@@ -584,8 +584,9 @@ class Lumberjack {
     }
 
     multi method fatal-messages(Lumberjack:D:) returns Supply {
-        $!fatal-messages;
+        $!fatal-messages //= self.all-messages.grep(Fatal);
     }
+
     has Supply $.error-messages;
 
     proto method error-messages(|c) { * }
@@ -595,8 +596,9 @@ class Lumberjack {
     }
 
     multi method error-messages(Lumberjack:D:) returns Supply {
-        $!error-messages;
+        $!error-messages //= self.all-messages.grep(Error);
     }
+
     has Supply $.warn-messages;
 
     proto method warn-messages(|c) { * }
@@ -605,7 +607,7 @@ class Lumberjack {
     }
 
     multi method warn-messages(Lumberjack:D:) returns Supply {
-        $!warn-messages;
+        $!warn-messages //= self.all-messages.grep(Warn);
     }
     has Supply $.info-messages;
 
@@ -615,7 +617,7 @@ class Lumberjack {
     }
 
     multi method info-messages(Lumberjack:D:) returns Supply {
-        $!info-messages;
+        $!info-messages //= self.all-messages.grep(Info);
     }
     has Supply $.debug-messages;
 
@@ -625,8 +627,9 @@ class Lumberjack {
     }
 
     multi method debug-messages(Lumberjack:D:) returns Supply {
-        $!debug-messages;
+        $!debug-messages //= self.all-messages.grep(Debug);
     }
+
     has Supply $.trace-messages;
 
     proto method trace-messages(|c) { * }
@@ -635,9 +638,8 @@ class Lumberjack {
     }
 
     multi method trace-messages(Lumberjack:D:) returns Supply {
-        $!trace-messages;
+        $!trace-messages //= self.all-messages.grep(Trace);
     }
-
 
     has Level $.default-level is rw = Error;
 
@@ -741,6 +743,10 @@ class Lumberjack {
         method log(Message $message) {
             ...
         }
+
+        method ACCEPTS(Message $message --> Bool) {
+            ($message.level ~~ self.levels) && ($message.class ~~ self.classes)
+        }
     }
 
     has Dispatcher @.dispatchers;
@@ -764,20 +770,8 @@ class Lumberjack {
     }
 
     multi method filtered-messages(Lumberjack:D:) returns Supply {
-        $!filtered-messages;
-    }
-
-    submethod BUILD() {
-        $!supplier       = Supplier.new;
-        $!all-messages   = $!supplier.Supply;
-        $!fatal-messages = $!all-messages.grep(Fatal);
-        $!error-messages = $!all-messages.grep(Error);
-        $!warn-messages  = $!all-messages.grep(Warn);
-        $!info-messages  = $!all-messages.grep(Info);
-        $!debug-messages = $!all-messages.grep(Debug);
-        $!trace-messages = $!all-messages.grep(Trace);
-        $!filtered-messages = supply {
-            whenever $!all-messages -> $m {
+        $!filtered-messages //= supply {
+            whenever self.all-messages -> $m {
                 my $filter-level = do if $m.class ~~ Logger {
                     $m.class.log-level;
                 }
@@ -789,10 +783,13 @@ class Lumberjack {
                 }
             }
         }
+    }
 
-        $!filtered-messages.tap(-> $message {
+    submethod TWEAK() {
+        $!supplier       = Supplier.new;
+        self.filtered-messages.tap(-> $message {
             for @!dispatchers -> $dispatcher {
-                if ($message.level ~~ $dispatcher.levels) && ($message.class ~~ $dispatcher.classes) {
+                if $message ~~ $dispatcher {
                     $dispatcher.log($message);
                 }
             }
@@ -804,18 +801,33 @@ class Lumberjack {
         DateTime::Format::RFC2822.new.to-string($date-time);
     }
 
-    sub format-message(Str $format, Message $message, :&date-formatter = &default-date-formatter, Int :$callframes --> Str ) is export(:FORMAT) {
+    my %expressions =   D => -> $message, $message-frame, &date-formatter { date-formatter($message.when) },
+                        P => -> $message, $message-frame, &date-formatter { $*PID.Str },
+                        C => -> $message, $message-frame, &date-formatter { $message.class.^name },
+                        L => -> $message, $message-frame, &date-formatter { $message.level.Str },
+                        M => -> $message, $message-frame, &date-formatter { $message.message },
+                        N => -> $message, $message-frame, &date-formatter { $*PROGRAM-NAME },
+                        F => -> $message, $message-frame, &date-formatter { $message-frame.file },
+                        l => -> $message, $message-frame, &date-formatter { $message-frame.line },
+                        S => -> $message, $message-frame, &date-formatter { $message-frame.subname };
+
+    my $expression = %expressions.keys.join('|');
+    my regex formatexpression {
+        '%'$<specifier>=[<$expression>]
+    }
+
+
+    sub format-message(Str $format is copy, Message $message, :&date-formatter = &default-date-formatter, Int :$callframes --> Str ) is export(:FORMAT) {
         my $message-frame = $callframes.defined ?? $message.backtrace[$callframes] !! $message.backtrace[*-1];
-        my %expressions =   D => { date-formatter($message.when) },
-                		    P => { $*PID },
-                            C => { $message.class.^name },
-                            L => { $message.level.Str },
-                            M => { $message.message },
-                            N => { $*PROGRAM-NAME },
-                            F => { $message-frame.file },
-                            l => { $message-frame.line },
-                            S => { $message-frame.subname };
-        $format.subst(/'%'(<{%expressions.keys}>)/, -> $/ { %expressions{~$0}.() }, :g);
+        my %expanded;
+
+        for %expressions.kv -> Str $specifier, &formatter {
+            %expanded{$specifier} = formatter($message, $message-frame, &date-formatter);
+        }
+
+        my $ret = $format.subst(&formatexpression, -> ( :$specifier ) { %expanded{$specifier} }, :g).Str;
+        %expanded = ();
+        $ret;
     }
 
     sub default-callframes( --> Int) {

@@ -1,3 +1,6 @@
+v0.1.2		Wed 31 Mar 14:26:40 BST 2021
+	* Fix memory leak in format-message
+	* Don't initialise Supplies unless they are used
 v0.1.1		Fri  5 Feb 07:43:15 GMT 2021
 	* Sensible default for Logger.level
 	* Amend documentation to reflect reality
