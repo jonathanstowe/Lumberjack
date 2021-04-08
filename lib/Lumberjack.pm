@@ -831,7 +831,7 @@ class Lumberjack {
     }
 
     sub default-callframes( --> Int) {
-        4;
+        3;
     }
 
     class Dispatcher::Console does Dispatcher {
