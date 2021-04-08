@@ -674,7 +674,7 @@ class Lumberjack {
                 $!level = Lumberjack.default-level;
             }
             if not @!backtrace.elems {
-                @!backtrace = (Backtrace.new.list);
+                @!backtrace = (Backtrace.new.list.grep(-> $f { !$f.is-hidden && !$f.is-setting }));
             }
             $!when = DateTime.now;
         }
@@ -705,7 +705,7 @@ class Lumberjack {
         }
 
         multi method log(Level $level, Str $message) is hidden-from-backtrace {
-            my @backtrace = Backtrace.new.list;
+            my @backtrace = Backtrace.new.list.grep( -> $f { !$f.is-hidden && !$f.is-setting });
             my $class = $?CLASS;
             my $mess = Message.new(:$level, :$message, :@backtrace, :$class);
             self.log($mess);
@@ -831,7 +831,7 @@ class Lumberjack {
     }
 
     sub default-callframes( --> Int) {
-        3;
+        0;
     }
 
     class Dispatcher::Console does Dispatcher {
