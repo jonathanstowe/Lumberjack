@@ -1,39 +1,39 @@
 {
-  "name": "Lumberjack",
-  "version": "0.1.3",
-  "auth": "github:jonathanstowe",
-  "api": "1.0",
-  "description": "A simple logging framework.",
-  "source-url": "https://github.com/jonathanstowe/Lumberjack.git",
-  "support": {
-      "source": "https://github.com/jonathanstowe/Lumberjack.git",
-	   "bugtracker" : "https://github.com/jonathanstowe/Lumberjack/issues",
-	   "email" : "jns+gh@gellyfish.co.uk"
-  },
-  "perl": "6.*",
-  "resources": [
-  ],
   "build-depends": [
   ],
+  "resources": [
+  ],
+  "api": "1.0",
+  "auth": "zef:jonathanstowe",
+  "provides": {
+    "Lumberjack": "lib/Lumberjack.pm"
+  },
   "depends": [
     "DateTime::Format"
   ],
+  "authors": [
+    "Jonathan Stowe <jns+gh@gellyfish.co.uk>"
+  ],
+  "version": "0.1.4",
+  "license": "Artistic-2.0",
+  "meta-version": "1",
+  "raku": null,
   "tags": [
     "logger",
     "log",
     "logging",
     "framework"
   ],
-  "license": "Artistic-2.0",
+  "source-url": "https://github.com/jonathanstowe/Lumberjack.git",
   "test-depends": [
     "Test",
     "IO::MiddleMan"
   ],
-  "provides": {
-    "Lumberjack": "lib/Lumberjack.pm"
-  },
-  "authors": [
-    "Jonathan Stowe <jns+gh@gellyfish.co.uk>"
-  ],
-  "meta-version": "1"
+  "description": "A simple logging framework.",
+  "name": "Lumberjack",
+  "support": {
+    "source": "https://github.com/jonathanstowe/Lumberjack.git",
+    "email": "jns+gh@gellyfish.co.uk",
+    "bugtracker": "https://github.com/jonathanstowe/Lumberjack/issues"
+  }
 }
