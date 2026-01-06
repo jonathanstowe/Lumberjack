@@ -51,7 +51,7 @@
       "purpose": null,
       "children": [
         {
-          "name": "Lumberjack.pm",
+          "name": "Lumberjack.rakumod",
           "type": "file"
         }
       ],

@@ -556,7 +556,10 @@ class Lumberjack {
     has Supply   $.all-messages;
 
     method !instance(|c) {
-        $lumberjack //= self.new(|c);
+        $lumberjack //= do {
+            say "**** NEW INSTANCE OF LUMBERJACK ****";
+            self.new(|c);
+        }
     }
 
     proto method all-messages(|c) { * }
@@ -566,7 +569,7 @@ class Lumberjack {
     }
 
     multi method all-messages(Lumberjack:D:) returns Supply {
-        $!all-messages //= $!supplier.Supply;
+        $!all-messages //= $!supplier.Supply.unique( expires => 2 );
     }
 
     enum Level <Off Fatal Error Warn Info Debug Trace All> does role {

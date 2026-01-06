@@ -6,7 +6,7 @@
   "api": "1.0",
   "auth": "zef:jonathanstowe",
   "provides": {
-    "Lumberjack": "lib/Lumberjack.pm"
+    "Lumberjack": "lib/Lumberjack.rakumod"
   },
   "depends": [
     "DateTime::Format"
@@ -14,7 +14,7 @@
   "authors": [
     "Jonathan Stowe <jns+gh@gellyfish.co.uk>"
   ],
-  "version": "0.1.4",
+  "version": "0.1.5",
   "license": "Artistic-2.0",
   "meta-version": "1",
   "raku": null,
